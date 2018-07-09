@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Mobinity</string>
+
+    <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDOmTBS7CnWwQV-RSjBL8Kq2Tvtn2G_yus</string>
 </resources>
