@@ -33,7 +33,7 @@
         </activity>
 
         <activity android:name=".LoginActivity" />
-        <activity android:name=".LocationActivity" />
+        <activity android:name=".MapsActivity" />
     </application>
 
 </manifest>
