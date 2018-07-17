@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.seongjoon.mobinity">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+
+    <!-- 딥링크 해결해야함 서치하면 나옴. -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">Mobinity</string>
 
+    <string name="login">로그인</string>
+    <string name="signUp">회원가입</string>
+    <string name="login_img">login_img</string>
+    <string name="sns_img">sns_img</string>
+    <string name="Email">Email</string>
+    <string name="Password">Password</string>
+    <string name="addressHint">Enter the Address.</string>
+    <string name="addressButt">주소로 이동</string>
+
     <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDOmTBS7CnWwQV-RSjBL8Kq2Tvtn2G_yus</string>
 </resources>
