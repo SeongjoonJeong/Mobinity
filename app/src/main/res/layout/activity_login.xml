@@ -8,6 +8,21 @@
     tools:context=".LoginActivity">
 
     <Button
+        android:id="@+id/LogoutButton"
+        android:layout_width="74dp"
+        android:layout_height="30dp"
+        android:background="#00ff0000"
+        android:text="@string/logout"
+        android:textColor="@android:color/background_light"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.748"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.676" />
+
+    <Button
         android:id="@+id/loginButton"
         android:layout_width="63dp"
         android:layout_height="30dp"
@@ -17,7 +32,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.532"
+        app:layout_constraintHorizontal_bias="0.295"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.676" />
@@ -32,7 +47,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.732"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.676" />
@@ -67,8 +82,8 @@
         android:layout_width="195dp"
         android:layout_height="40dp"
         android:ems="10"
-        android:inputType="textEmailAddress"
         android:hint="@string/Email"
+        android:inputType="textEmailAddress"
         android:textColor="@android:color/background_light"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/password"
@@ -84,8 +99,8 @@
         android:layout_width="195dp"
         android:layout_height="40dp"
         android:ems="10"
-        android:inputType="textPassword"
         android:hint="@string/Password"
+        android:inputType="textPassword"
         android:textColor="@android:color/background_light"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/loginButton"
@@ -93,5 +108,18 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email" />
+
+    <com.kakao.usermgmt.LoginButton
+        android:id="@+id/kakao_login1"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sns"
+        app:layout_constraintVertical_bias="0.578" />
+
 
 </android.support.constraint.ConstraintLayout>
