@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         newLoginButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MapActivity.class);
                 startActivity(intent); // Move the next page.
             }
         });
