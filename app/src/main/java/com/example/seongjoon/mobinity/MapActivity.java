@@ -1,11 +1,17 @@
 package com.example.seongjoon.mobinity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,9 +22,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,8 +39,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity
@@ -41,6 +58,7 @@ public class MapActivity extends AppCompatActivity
     private Geocoder geocoder;
     private Button button;
     private EditText editText;
+    private ImageView userImage;
     private Location lastKnownLocation;
     private static final LatLng DEFAULT_LOCATION = new LatLng(-34, 151);
     private static final int DEFAULT_ZOOM = 15;
@@ -49,6 +67,19 @@ public class MapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        // 사용자 프로필 및 이름 적용. //
+        NavigationView naviView = findViewById(R.id.nav_view);
+        naviView.setNavigationItemSelectedListener(this);
+        View navHeaderMap = naviView.getHeaderView(0);
+
+        TextView userName = navHeaderMap.findViewById(R.id.user_name);
+        userImage = navHeaderMap.findViewById(R.id.user_img);
+
+        userName.setText(User.getInstance().getUserName());
+        LinkImage();
+        //////////////////////////////////
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -79,6 +110,107 @@ public class MapActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
     }
 
+    //프로필 연동을 위한 부분//
+
+    Handler handler = new Handler();    //카카오톡 이미지 연동 시 사용할 핸들러!
+
+    //이미지 연동
+    public void LinkImage(){
+        String pImage = User.getInstance().getProfileImagePath();
+
+        if(pImage.equals(""));
+        else {
+            new ImageDownload().execute(pImage);
+            // 인터넷 상의 이미지 보여주기
+
+            // 1. 권한을 획득한다 (인터넷에 접근할수 있는 권한을 획득한다)  - 메니페스트 파일
+            // 2. Thread 에서 웹의 이미지를 가져오기
+            // 3. 외부쓰레드에서 메인 UI에 접근위해 Handler 사용
+
+            //Thread t = new Thread(Runnable 객체 생성);
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {    // 오래 걸릴 작업 구현
+                    // TODO Auto-generated method stub
+                    try {
+                        URL url = new URL(pImage);
+                        InputStream is = url.openStream();
+                        final Bitmap bm = BitmapFactory.decodeStream(is);
+                        handler.post(new Runnable() {
+
+                            @Override
+                            public void run() {  // 화면에 그려줄 작업
+                                userImage.setImageBitmap(bm);
+                            }
+                        });
+                        userImage.setImageBitmap(bm); //비트맵 객체로 보여주기
+                    } catch (Exception e) {
+                    }
+                }
+            });
+            t.start();
+        }
+    }
+    //url 이미지 다운로드 (카카오프로필 이미지)
+    private class ImageDownload extends AsyncTask<String, Void, Void> {
+        private String fileName;/* 파일명 */
+        private final String SAVE_FOLDER = "/Goal_Profile";/* 저장할 폴더 */
+
+        @Override
+        protected Void doInBackground(String... params) {
+            //다운로드 경로를 지정
+            String savePath = Environment.getExternalStorageDirectory().toString() + SAVE_FOLDER;
+
+            File dir = new File(savePath);
+            //상위 디렉토리가 존재하지 않을 경우 생성
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            fileName = String.valueOf(User.getInstance().getUserID());
+
+            //웹 서버 쪽 파일이 있는 경로
+            String fileUrl = params[0];
+
+            //다운로드 폴더에 동일한 파일명이 존재하는지 확인
+            /*if (new File(savePath + "/" + fileName).exists() == false) {
+            } else {}*/
+
+            String localPath = savePath + "/" + fileName + ".jpg";
+
+            try {
+                URL imgUrl = new URL(fileUrl);
+                //서버와 접속하는 클라이언트 객체 생성
+                HttpURLConnection conn = (HttpURLConnection)imgUrl.openConnection();
+                int len = conn.getContentLength();
+                byte[] tmpByte = new byte[len];
+                //입력 스트림을 구한다
+                InputStream is = conn.getInputStream();
+                File file = new File(localPath);
+                //파일 저장 스트림 생성
+                FileOutputStream fos = new FileOutputStream(file);
+                int read;
+                //입력 스트림을 파일로 저장
+                for (;;) {
+                    read = is.read(tmpByte);
+                    if (read <= 0) {
+                        break;
+                    }
+                    fos.write(tmpByte, 0, read); //file 생성
+                }
+
+                is.close();
+                fos.close();
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -105,6 +237,21 @@ public class MapActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_setting) {
 
+        }else if (id == R.id.nav_logout) {
+            // 카카오톡으로 로그인 된 건지 확인.
+            if (Session.getCurrentSession().isOpened()) {
+                // 로그인 상태
+                UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
+                    @Override
+                    public void onCompleteLogout() {
+                        // 로그아웃 시 로그인 페이지로 이동.
+                        Intent intent = new Intent(MapActivity.this, LoginActivity.class);
+                        startActivity(intent); // Move the next page.
+                    }
+                });
+            } else {
+                // 로그인되어있지 않은 상태
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
