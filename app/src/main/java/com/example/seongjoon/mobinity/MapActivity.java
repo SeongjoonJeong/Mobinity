@@ -250,7 +250,9 @@ public class MapActivity extends AppCompatActivity
                     }
                 });
             } else {
-                // 로그인되어있지 않은 상태
+                // 다른 경로로 로그인한 상태
+                Intent intent = new Intent(MapActivity.this, LoginActivity.class);
+                startActivity(intent); // Move the next page.
             }
         }
 

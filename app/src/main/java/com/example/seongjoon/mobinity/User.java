@@ -6,7 +6,13 @@ public class User {
     private String userEmail;
     private long userID;
 
-    private User(){}
+    private User(){
+        userName = "Android";
+        profileImagePath = "@mipmap/ic_launcher_round";
+        userEmail = "google@gmail.com";
+        userID = 12345;
+    }
+
 
     // User를 singleton 클래스로 만들기 위한 클래스
     private static class Holder{
