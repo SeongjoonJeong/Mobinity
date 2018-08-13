@@ -1,6 +1,7 @@
 package com.example.seongjoon.mobinity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,9 +27,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,6 +41,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,16 +59,37 @@ import java.net.URL;
 import java.util.List;
 
 public class MapActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
 
     private GoogleMap mMap;
     private Geocoder geocoder;
-    private Button button;
-    private EditText editText;
+    private Button buttSearch;
+    private Button buttBeforeItem;
+    private Button buttNextItem;
+    private Button buttBeforeReceiver;
+    private Button buttNextReceiver;
+    private Button buttCancelCheck;
+    private Button buttOkCheck;
+    private Button buttCancelRequest;
+    private EditText startingPoint;
+    private EditText destination;
     private ImageView userImage;
     private Location lastKnownLocation;
     private static final LatLng DEFAULT_LOCATION = new LatLng(-34, 151);
     private static final int DEFAULT_ZOOM = 15;
+
+    private LinearLayout topPathLayout;
+    private LinearLayout topMatchingLayout;
+    private LinearLayout topStartDeliveryLayout;
+    private LinearLayout topCompleteDeliveryLayout;
+    private TableLayout tableLayoutItem;
+    private TableLayout tableLayoutReceiver;
+    private TableLayout tableLayoutCheck;
+    private TableLayout tableLayoutMatching;
+    private TableLayout tableLayoutMessage;
+    private TableLayout tableLayoutInfo;
+    private FloatingActionButton fab;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +97,9 @@ public class MapActivity extends AppCompatActivity
         setContentView(R.layout.activity_map);
 
         // 사용자 프로필 및 이름 적용. //
-        NavigationView naviView = findViewById(R.id.nav_view);
-        naviView.setNavigationItemSelectedListener(this);
-        View navHeaderMap = naviView.getHeaderView(0);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View navHeaderMap = navigationView.getHeaderView(0);
 
         TextView userName = navHeaderMap.findViewById(R.id.user_name);
         userImage = navHeaderMap.findViewById(R.id.user_img);
@@ -83,10 +111,28 @@ public class MapActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        editText = findViewById(R.id.editText);
-        button = findViewById(R.id.button);
+        startingPoint = findViewById(R.id.starting_point);
+        destination = findViewById(R.id.destination);
+        buttSearch = findViewById(R.id.buttSearch);
+        buttBeforeItem = findViewById(R.id.butt_before_item);
+        buttNextItem = findViewById(R.id.butt_next_item);
+        buttBeforeReceiver = findViewById(R.id.butt_before_receiver);
+        buttNextReceiver = findViewById(R.id.butt_next_receiver);
+        buttCancelCheck = findViewById(R.id.butt_cancel_check);
+        buttOkCheck = findViewById(R.id.butt_ok_check);
+        buttCancelRequest = findViewById(R.id.butt_cancel_request);
+        tableLayoutItem = findViewById(R.id.table_layout_item);
+        tableLayoutReceiver = findViewById(R.id.table_layout_receiver);
+        tableLayoutCheck = findViewById(R.id.table_layout_check);
+        tableLayoutMatching = findViewById(R.id.table_layout_matching);
+        tableLayoutMessage = findViewById(R.id.table_layout_message);
+        tableLayoutInfo = findViewById(R.id.table_layout_info);
+        topPathLayout = findViewById(R.id.top_path_layout);
+        topMatchingLayout = findViewById(R.id.top_matching_layout);
+        topStartDeliveryLayout = findViewById(R.id.top_start_delivery_layout);
+        topCompleteDeliveryLayout = findViewById(R.id.top_complete_delivery_layout);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,9 +146,6 @@ public class MapActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         // SupportMapFragment 생성 후, 맵이 사용될 준비가 됐다는 것을 알림.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -228,10 +271,49 @@ public class MapActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            // 돌아가기
+            topMatchingLayout.setVisibility(navigationView.INVISIBLE);
+            topStartDeliveryLayout.setVisibility(navigationView.INVISIBLE);
+            topCompleteDeliveryLayout.setVisibility(navigationView.INVISIBLE);
+            tableLayoutItem.setVisibility(navigationView.INVISIBLE);
+            tableLayoutReceiver.setVisibility(navigationView.INVISIBLE);
+            tableLayoutCheck.setVisibility(navigationView.INVISIBLE);
+            tableLayoutMatching.setVisibility(navigationView.INVISIBLE);
+            tableLayoutMessage.setVisibility(navigationView.INVISIBLE);
+            tableLayoutInfo.setVisibility(navigationView.INVISIBLE);
+
+            topPathLayout.setVisibility(navigationView.VISIBLE);
+            fab.setVisibility(navigationView.VISIBLE);
+
         } else if (id == R.id.nav_gallery) {
+            // 배송출발
+            topPathLayout.setVisibility(navigationView.INVISIBLE);
+            topMatchingLayout.setVisibility(navigationView.INVISIBLE);
+            topCompleteDeliveryLayout.setVisibility(navigationView.INVISIBLE);
+            tableLayoutItem.setVisibility(navigationView.INVISIBLE);
+            tableLayoutReceiver.setVisibility(navigationView.INVISIBLE);
+            tableLayoutCheck.setVisibility(navigationView.INVISIBLE);
+            tableLayoutMatching.setVisibility(navigationView.INVISIBLE);
+            tableLayoutInfo.setVisibility(navigationView.INVISIBLE);
+            fab.setVisibility(navigationView.INVISIBLE);
+
+            topStartDeliveryLayout.setVisibility(navigationView.VISIBLE);
+            tableLayoutMessage.setVisibility(navigationView.VISIBLE);
 
         } else if (id == R.id.nav_slideshow) {
+            // 배송완료
+            topPathLayout.setVisibility(navigationView.INVISIBLE);
+            topMatchingLayout.setVisibility(navigationView.INVISIBLE);
+            topStartDeliveryLayout.setVisibility(navigationView.INVISIBLE);
+            tableLayoutItem.setVisibility(navigationView.INVISIBLE);
+            tableLayoutReceiver.setVisibility(navigationView.INVISIBLE);
+            tableLayoutCheck.setVisibility(navigationView.INVISIBLE);
+            tableLayoutMatching.setVisibility(navigationView.INVISIBLE);
+            tableLayoutMessage.setVisibility(navigationView.INVISIBLE);
+            fab.setVisibility(navigationView.INVISIBLE);
+
+            topCompleteDeliveryLayout.setVisibility(navigationView.VISIBLE);
+            tableLayoutInfo.setVisibility(navigationView.VISIBLE);
 
         } else if (id == R.id.nav_manage) {
 
@@ -276,6 +358,29 @@ public class MapActivity extends AppCompatActivity
         mMap = googleMap;
         geocoder = new Geocoder(this);
 
+        // 현위치에 마커 표시 후, 카메라 이동.
+        getMyLocation();
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.showInfoWindow();
+
+                if(marker.getTitle().equals("도착지")){
+                    View view = findViewById(R.id.nav_view);
+                    Snackbar.make(view, "입력된 경로가 맞습니까?", Snackbar.LENGTH_LONG)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    fab.setVisibility(v.INVISIBLE);
+                                    tableLayoutItem.setVisibility(v.VISIBLE);
+                                }}).show();
+                }
+                return true;
+            }
+        });
+
         // 맵 터치 이벤트 구현 //
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
             @Override
@@ -290,18 +395,94 @@ public class MapActivity extends AppCompatActivity
                 // LatLng: 위도 경도 쌍을 나타냄
                 mOptions.position(new LatLng(latitude, longitude));
                 // 마커(핀) 추가
-                googleMap.addMarker(mOptions);
+                //googleMap.addMarker(mOptions);
             }
         });
 
-        // 버튼 이벤트
-        button.setOnClickListener(new Button.OnClickListener(){
+
+        // (1). 물품 레이아웃 BEFORE 버튼 이벤트
+        buttBeforeItem.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                tableLayoutItem.setVisibility(view.INVISIBLE);
+                fab.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (1). 물품 레이아웃 NEXT 버튼 이벤트
+        buttNextItem.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                tableLayoutItem.setVisibility(view.INVISIBLE);
+                tableLayoutReceiver.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (2). 받는이 레이아웃 BEFORE 버튼 이벤트
+        buttBeforeReceiver.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                tableLayoutReceiver.setVisibility(view.INVISIBLE);
+                tableLayoutItem.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (2). 받는이 레이아웃 NEXT 버튼 이벤트
+        buttNextReceiver.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                tableLayoutReceiver.setVisibility(view.INVISIBLE);
+                tableLayoutCheck.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (3). 확인창 레이아웃 CANCEL 버튼 이벤트
+        buttCancelCheck.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                tableLayoutCheck.setVisibility(view.INVISIBLE);
+                fab.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (3). 확인창 레이아웃 OK 버튼 이벤트
+        buttOkCheck.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                topPathLayout.setVisibility(view.INVISIBLE);
+                tableLayoutCheck.setVisibility(view.INVISIBLE);
+                topMatchingLayout.setVisibility(view.VISIBLE);
+                tableLayoutMatching.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // (4). 매칭중 레이아웃 요청취소 버튼 이벤트
+        buttCancelRequest.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                topMatchingLayout.setVisibility(view.INVISIBLE);
+                tableLayoutMatching.setVisibility(view.INVISIBLE);
+                topPathLayout.setVisibility(view.VISIBLE);
+                fab.setVisibility(view.VISIBLE);
+            }
+        });
+
+        // 검색 버튼 이벤트
+        buttSearch.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
-                String str=editText.getText().toString();
+                if(startingPoint.getText().toString().equals("")){
+
+                }
+
+                // 키보드 내리기
+                InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                String str=destination.getText().toString();
                 List<Address> addressList = null;
                 try {
-                    // editText에 입력한 텍스트(주소, 지역, 장소 등)을 지오 코딩을 이용해 변환
+                    // destination에 입력한 텍스트(주소, 지역, 장소 등)을 지오 코딩을 이용해 변환
                     addressList = geocoder.getFromLocationName(
                             str, // 주소
                             10); // 최대 검색 결과 개수
@@ -325,19 +506,16 @@ public class MapActivity extends AppCompatActivity
                 LatLng point = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
                 // 마커 생성
                 MarkerOptions mOptions2 = new MarkerOptions();
-                mOptions2.title("search result");
+                mOptions2.title("도착지");
                 mOptions2.snippet(address);
                 mOptions2.position(point);
+
                 // 마커 추가
                 mMap.addMarker(mOptions2);
                 // 해당 좌표로 화면 줌
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point,15));
             }
         });
-        ////////////////////
-
-        // 현위치에 마커 표시 후, 카메라 이동.
-        getMyLocation();
     }
 
     private void getMyLocation() {
@@ -357,8 +535,35 @@ public class MapActivity extends AppCompatActivity
             public void onSuccess(Location location) {
                 lastKnownLocation = location;
 
+                // 좌표(위도, 경도) 생성
                 LatLng currentLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(currentLocation).title("현위치"));
+                String address = "해당되는 주소 정보는 없습니다"; // 주소
+
+                // 위도,경도 입력 후 변환 버튼 클릭
+                List<Address> list = null;
+                try {
+                    list = geocoder.getFromLocation(
+                            lastKnownLocation.getLatitude(), // 위도
+                            lastKnownLocation.getLongitude(), // 경도
+                            10); // 얻어올 값의 개수
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("test", "입출력 오류 : 위경도-주소변환 에러발생");
+                }
+                if (list != null) {
+                    if (list.size()!=0) {
+                        String []splitStr = list.get(0).toString().split(",");
+                        address = splitStr[0].substring(splitStr[0].indexOf("\"") + 1,splitStr[0].length() - 2); // 주소
+                    }
+                }
+
+                // 마커 생성
+                MarkerOptions mOptions3 = new MarkerOptions();
+                mOptions3.title("현위치");
+                mOptions3.snippet(address);
+                mOptions3.position(currentLocation);
+                // 마커 추가
+                mMap.addMarker(mOptions3);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM));
             }
         });

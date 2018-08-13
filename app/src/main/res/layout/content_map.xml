@@ -4,34 +4,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#e67f24"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MapActivity"
     tools:showIn="@layout/app_bar_map">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <!-- 기본 메인 화면 -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="10">
+        android:weightSum="10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/top_path_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="8">
+            android:layout_weight="7"
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="주소를 입력하세요." />
-
-            <Button
-                android:id="@+id/button"
+            <TextView
+                android:id="@+id/location_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="검색" />
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/location_text"
+                android:textColor="@android:color/background_light"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/starting_point"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:hint="@string/starting_point"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/destination"
+                android:layout_width="330dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:hint="@string/destination"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/buttSearch"
+                android:layout_width="50dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/butt_bg1"
+                android:text="검색"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -43,7 +75,532 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context="com.example.seongjoon.mobinity.MapsActivity" />
-
     </LinearLayout>
+
+    <!-- (1). 보내는 물건 종류 선택 레이아웃 -->
+    <TableLayout
+        android:id="@+id/table_layout_item"
+        android:layout_width="270dp"
+        android:layout_height="290dp"
+        android:background="#e67f24"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735">
+
+        <TableRow>
+            <TextView
+                android:layout_span="3"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:text="어떤 물건을 보내실건가요?"
+                android:textColor="@android:color/background_light"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <View
+            android:layout_height="2px"
+            android:background="#FFFFFF" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="5dp">
+
+            <ImageButton
+                android:id="@+id/img_butt_doc"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/doc" />
+
+            <ImageButton
+                android:id="@+id/img_butt_bag"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/bag" />
+
+            <ImageButton
+                android:id="@+id/img_butt_box"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/box" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/img_butt_large_box"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/large_box" />
+
+            <ImageButton
+                android:id="@+id/img_butt_flower"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/flower" />
+
+            <ImageButton
+                android:id="@+id/img_butt_and_so_on"
+                android:layout_width="85dp"
+                android:layout_height="100dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/and_so_on" />
+        </TableRow>
+
+        <RelativeLayout
+            android:paddingBottom="7dp">
+            <Button
+                android:id="@+id/butt_before_item"
+                android:layout_width="75dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="BEFORE"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/empty_view_item"
+                android:layout_width="105dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/butt_before_item">
+            </View>
+
+            <Button
+                android:id="@+id/butt_next_item"
+                android:layout_width="63dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/empty_view_item"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="NEXT"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+    </TableLayout>
+
+    <!-- (2). 받는이 정보 및 요금합계 레이아웃 -->
+    <TableLayout
+        android:id="@+id/table_layout_receiver"
+        android:layout_width="270dp"
+        android:layout_height="290dp"
+        android:background="#e67f24"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735">
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:text="받는 분의 정보를 입력해주세요."
+                android:textColor="@android:color/background_light"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/finding_contact_address"
+                android:layout_width="75dp"
+                android:layout_height="85dp"
+                android:layout_marginLeft="8dp"
+                android:padding="2dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/finding_contact_address" />
+
+            <TextView
+                android:id="@+id/TV_name"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toRightOf="@id/finding_contact_address"
+                android:paddingLeft="10dp"
+                android:paddingRight="12dp"
+                android:paddingTop="13dp"
+                android:text="성함 :"
+                android:textColor="@android:color/background_light"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/ET_name"
+                android:layout_width="115dp"
+                android:layout_height="40dp"
+                android:layout_toRightOf="@id/TV_name"
+                android:ems="10"
+                android:hint="ex) 홍길동"
+                android:inputType="text"
+                android:textColor="@android:color/background_light"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/TV_phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingTop="13dp"
+                android:paddingLeft="10dp"
+                android:layout_toRightOf="@id/finding_contact_address"
+                android:layout_below="@id/TV_name"
+                android:text="핸드폰 :"
+                android:textColor="@android:color/background_light"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/ET_phone_number"
+                android:layout_width="115dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/ET_name"
+                android:layout_toRightOf="@id/TV_phone_number"
+                android:ems="10"
+                android:hint="ex) 010-1234-5678"
+                android:inputType="phone"
+                android:textColor="@android:color/background_light"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_height="2px"
+            android:background="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:text="요금 합계"
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/table"
+            android:layout_width="match_parent"
+            android:layout_height="95dp"
+            android:contentDescription="table image"
+            app:srcCompat="@drawable/table" />
+
+        <RelativeLayout
+            android:paddingBottom="7dp">
+            <Button
+                android:id="@+id/butt_before_receiver"
+                android:layout_width="75dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="BEFORE"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/empty_view_receiver"
+                android:layout_width="105dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/butt_before_receiver">
+            </View>
+
+            <Button
+                android:id="@+id/butt_next_receiver"
+                android:layout_width="63dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/empty_view_receiver"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="NEXT"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+    </TableLayout>
+
+    <!-- (3). 확인창 레이아웃 -->
+    <TableLayout
+        android:id="@+id/table_layout_check"
+        android:layout_width="270dp"
+        android:layout_height="150dp"
+        android:background="#e67f24"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.569">
+
+
+        <TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:text="Check Info"
+                android:textColor="@android:color/background_light"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:paddingBottom="5dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="5dp"
+                android:text="배송을 시작할까요?"
+                android:textColor="#eeeeee"
+                android:textSize="14dp"/>
+        </TableRow>
+
+        <RelativeLayout
+            android:paddingLeft="10dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="20dp">
+            <Button
+                android:id="@+id/butt_cancel_check"
+                android:layout_width="75dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="CANCEL"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/empty_view_check"
+                android:layout_width="105dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/butt_cancel_check">
+            </View>
+
+            <Button
+                android:id="@+id/butt_ok_check"
+                android:layout_width="63dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/empty_view_check"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/butt_bg1"
+                android:text="OK"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+    </TableLayout>
+
+    <!-- (4). 매칭중 레이아웃 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/top_matching_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="7"
+            android:visibility="invisible"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/butt_cancel_request"
+                android:layout_width="74dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/butt_bg1"
+                android:text="요청취소"
+                android:textColor="@android:color/background_light"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/matching_img"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="이미지입니다."
+                app:srcCompat="@drawable/matching_img" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <TableLayout
+        android:id="@+id/table_layout_matching"
+        android:layout_width="270dp"
+        android:layout_height="290dp"
+        android:background="@android:color/background_light"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735">
+
+        <ImageView
+            android:id="@+id/matching_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="이미지입니다."
+            app:srcCompat="@drawable/matching_text" />
+
+
+    </TableLayout>
+
+    <!-- (5). 배송출발 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/top_start_delivery_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_weight="7"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/start_delivery_img"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="이미지입니다."
+                app:srcCompat="@drawable/start_delivery_img" />
+
+        </LinearLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </LinearLayout>
+    <TableLayout
+        android:id="@+id/table_layout_message"
+        android:layout_width="243dp"
+        android:layout_height="290dp"
+        android:background="@android:color/background_light"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735">
+
+        <ImageView
+            android:id="@+id/message_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="이미지입니다."
+            app:srcCompat="@drawable/message_img" />
+    </TableLayout>
+
+    <!-- (6). 배송출발 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/top_complete_delivery_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="10"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="70dp"
+            android:layout_weight="7"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/complete_delivery_img"
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="이미지입니다."
+                app:srcCompat="@drawable/completion_text" />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </LinearLayout>
+    <TableLayout
+        android:id="@+id/table_layout_info"
+        android:layout_width="210dp"
+        android:layout_height="290dp"
+        android:background="@android:color/background_light"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735">
+
+        <ImageView
+            android:id="@+id/completion_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="이미지입니다."
+            app:srcCompat="@drawable/completion_info" />
+    </TableLayout>
 
 </android.support.constraint.ConstraintLayout>

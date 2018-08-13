@@ -70,7 +70,7 @@ public class SNSLoginActivity extends AppCompatActivity {
                 User.getInstance().setUserEmail(result.getEmail());
                 User.getInstance().setUserID(result.getId());
 
-                Toast.makeText(SNSLoginActivity.this, "사용자 이름은 " + result.getNickname(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SNSLoginActivity.this, "사용자 이름은 " + result.getNickname(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(SNSLoginActivity.this, MapActivity.class);
                 startActivity(intent); // Move the next page.
             }

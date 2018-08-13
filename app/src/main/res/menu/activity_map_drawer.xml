@@ -7,15 +7,15 @@
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="여정내역" />
+            android:title="돌아가기" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="결제카드" />
+            android:title="배송출발" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="문의하기" />
+            android:title="배송완료" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_gallery"

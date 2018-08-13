@@ -8,6 +8,9 @@
     <string name="sns_img">sns_img</string>
     <string name="Email">Email</string>
     <string name="Password">Password</string>
+    <string name="location_text">어디로 보낼까요?</string>
+    <string name="starting_point">출발지 : 현위치</string>
+    <string name="destination">도착지 : </string>
     <string name="addressHint">주소를 입력하세요.</string>
     <string name="addressButt">검색</string>
 
